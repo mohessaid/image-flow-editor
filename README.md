@@ -1,12 +1,6 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Image Flow Generator
 
-# Run and deploy your AI Studio app
-
-This contains everything you need to run your app locally.
-
-View your app in AI Studio: https://ai.studio/apps/drive/1fSzFx1meUPEBrM97wzeQ_Rxe0UNnb81q
+This is a simple image flow generator. It's started as a submission for  the Kendo UI React Challenge at Dev.to . Most of the code was generated with Google AI Studio with the help of the Kendo UI React Coding Assistant MCP.
 
 ## Run Locally
 
@@ -18,3 +12,19 @@ View your app in AI Studio: https://ai.studio/apps/drive/1fSzFx1meUPEBrM97wzeQ_R
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
 3. Run the app:
    `npm run dev`
+
+# Features
+
+- [x] Upload image(s).
+- [x] Flow editor.
+- [x] Preview results.
+- [x] Download results.
+- [x] Download all files at once.
+- [x] Dashboard for AI tokens usage.
+- [x] Dashboard stats for most used flow nodes.
+- [ ] Integrate Multiple AI Models.
+- [ ] Enhance Workflow editor.
+  - [ ] Delete node.
+  - [ ] Zoom in/out.
+  - [ ] Panning.
+- [ ] Add Authentication.
