@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Card,
   CardHeader,
@@ -15,6 +15,8 @@ import {
   ChartCategoryAxisItem,
   ChartTooltip,
 } from "@progress/kendo-react-charts";
+import { Grid, GridColumn } from "@progress/kendo-react-grid";
+import { process } from "@progress/kendo-data-query";
 import type { OperationLog } from "../types";
 
 interface DashboardProps {
@@ -147,6 +149,14 @@ const Dashboard: React.FC<DashboardProps> = ({ logs, onClear }) => {
     [logs],
   );
 
+  // Grid state for client-side paging and sorting
+  const [dataState, setDataState] = useState({
+    skip: 0,
+    take: 10,
+    sort: [] as any[],
+  });
+  const dataResult = process(sortedLogs, dataState);
+
   return (
     <div className="space-y-8 animate-fade-in">
       <div className="flex justify-between items-center">
@@ -238,80 +248,46 @@ const Dashboard: React.FC<DashboardProps> = ({ logs, onClear }) => {
             style={{ height: "450px" }}
           >
             {sortedLogs.length > 0 ? (
-              <table className="w-full text-sm text-left text-gray-300">
-                <thead className="text-xs text-gray-400 uppercase bg-gray-900/75 backdrop-blur-sm sticky top-0 z-10">
-                  <tr>
-                    <th
-                      scope="col"
-                      className="px-4 py-3"
-                      style={{ width: "220px" }}
-                    >
-                      Date
-                    </th>
-                    <th scope="col" className="px-4 py-3">
-                      Image Name
-                    </th>
-                    <th scope="col" className="px-4 py-3">
-                      Node Used
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-4 py-3"
-                      style={{ width: "120px" }}
-                    >
-                      Status
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-4 py-3 text-right"
-                      style={{ width: "120px" }}
-                    >
-                      Cost
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sortedLogs.map((log) => (
-                    <tr
-                      key={log.id}
-                      className="border-b border-gray-700 last:border-b-0 hover:bg-gray-700/50"
-                    >
-                      <td className="px-4 py-2 whitespace-nowrap">
-                        {log.timestamp.toLocaleString([], {
-                          dateStyle: "medium",
-                          timeStyle: "short",
-                        })}
-                      </td>
-                      <td
-                        className="px-4 py-2 truncate max-w-xs"
-                        title={log.imageName}
-                      >
-                        {log.imageName}
-                      </td>
-                      <td
-                        className="px-4 py-2 truncate max-w-xs"
-                        title={log.nodeName}
-                      >
-                        {log.nodeName}
-                      </td>
-                      <td className="px-4 py-2">
-                        <span
-                          className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${log.status === "success" ? "bg-green-900 text-green-300" : "bg-red-900 text-red-300"}`}
-                        >
-                          {log.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-2 font-mono text-right">
-                        {log.cost.toLocaleString("en-US", {
-                          style: "currency",
-                          currency: "USD",
-                          minimumFractionDigits: 4,
-                        })}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <Grid
+                data={dataResult.data.map((log: any) => ({
+                  ...log,
+                  dateStr: log.timestamp.toLocaleString([], {
+                    dateStyle: "medium",
+                    timeStyle: "short",
+                  }),
+                  costStr: log.cost.toLocaleString("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                    minimumFractionDigits: 4,
+                  }),
+                }))}
+                dataItemKey="id"
+                style={{ height: "450px" }}
+                pageable={true}
+                skip={dataState.skip}
+                take={dataState.take}
+                total={dataResult.total}
+                sortable={true}
+                sort={dataState.sort}
+                onSortChange={(e) =>
+                  setDataState({ ...dataState, sort: e.sort })
+                }
+                onPageChange={(e) =>
+                  setDataState({
+                    ...dataState,
+                    skip: e.page.skip,
+                    take: e.page.take,
+                  })
+                }
+                selectable={{ enabled: true }}
+                className="text-sm text-left text-gray-300"
+              >
+                <GridColumn field="dateStr" title="Date" width="220px" />
+                <GridColumn field="imageName" title="Image Name" />
+                <GridColumn field="nodeName" title="Node Used" />
+                <GridColumn field="status" title="Status" width="120px" />
+                <GridColumn field="costStr" title="Cost" width="120px" />
+              </Grid>
             ) : (
               <div className="flex items-center justify-center h-full">
                 <div className="text-center text-gray-500">
