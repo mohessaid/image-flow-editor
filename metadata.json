@@ -1,0 +1,5 @@
+{
+  "name": "Image Flow Editor",
+  "description": "An application to create and execute image editing workflows using AI. Upload images, add a sequence of editing prompts and algorithms, and download the results.",
+  "requestFramePermissions": []
+}
